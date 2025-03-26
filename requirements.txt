@@ -1,0 +1,10 @@
+numpy
+torch
+nibabel
+trimesh
+matplotlib
+polyscope
+pyrender
+open3d
+scipy
+gpytoolbox
