@@ -1,3 +1,7 @@
+"""
+Module with shared projection helper functions.
+"""
+
 import numpy as np
 import matplotlib.pyplot as plt
 import open3d as o3d
@@ -67,7 +71,7 @@ def compute_intmat(img_width, img_height):
     intmat = np.eye(3)
 
     # Fill the diagonal elements with appropriate values
-    np.fill_diagonal(intmat, [-(img_width + img_height) / 1, -(img_width + img_height) / 1, 1])
+    np.fill_diagonal(intmat, [-(img_width + img_height), -(img_width + img_height), 1])
 
     # Set the last column of the matrix for image centering
     intmat[:,-1] = [img_width / 2, img_height / 2, 1]
