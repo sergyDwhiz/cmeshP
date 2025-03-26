@@ -1,3 +1,8 @@
+"""
+Module for visualizing 3D cortical meshes and extracting features via 2D projections.
+Ensure that the custom model (MultiViewCNN) is available in trainCNN.
+"""
+
 import pyrender
 import numpy as np
 import trimesh
@@ -6,9 +11,13 @@ import polyscope as ps
 import nibabel as nib
 import os
 import torch
-from trainCNN import MultiViewCNN
+from trainCNN import MultiViewCNN  # Ensure this module is in your PYTHONPATH
 
 def visualize_mesh(mesh_path, save_dir, annotations_path, curvature_path, model_path):
+    """
+    Visualizes a FreeSurfer mesh via multiple 2D projections, extracts CNN features,
+    and registers annotations and curvature in a Polyscope visualization.
+    """
     # Ensure the save directory exists
     os.makedirs(save_dir, exist_ok=True)
 
@@ -23,27 +32,16 @@ def visualize_mesh(mesh_path, save_dir, annotations_path, curvature_path, model_
     scene.add(pyrender.Mesh.from_trimesh(mesh))
 
     # Define camera views and positions
-    camera_views = [
-        pyrender.PerspectiveCamera(yfov=np.pi / 3.0),  # Camera 1
-        pyrender.PerspectiveCamera(yfov=np.pi / 3.0),  # Camera 2
-        pyrender.PerspectiveCamera(yfov=np.pi / 3.0),  # Camera 3
-        pyrender.PerspectiveCamera(yfov=np.pi / 3.0),  # Camera 4
-        pyrender.PerspectiveCamera(yfov=np.pi / 3.0),  # Camera 5
-        pyrender.PerspectiveCamera(yfov=np.pi / 3.0),  # Camera 6
-    ]
+    camera_views = [pyrender.PerspectiveCamera(yfov=np.pi/3.0) for _ in range(6)]
+    camera_positions = [[1,0,0], [-1,0,0], [0,1,0], [0,-1,0], [0,0,1], [0,0,-1]]
 
-    camera_positions = [
-        [1, 0, 0],  # Camera 1
-        [-1, 0, 0],  # Camera 2
-        [0, 1, 0],  # Camera 3
-        [0, -1, 0],  # Camera 4
-        [0, 0, 1],  # Camera 5
-        [0, 0, -1],  # Camera 6
-    ]
-
-    # Load the trained model
+    # Load the trained model with error handling.
     model = MultiViewCNN()
-    model.load_state_dict(torch.load(model_path))
+    try:
+        model.load_state_dict(torch.load(model_path))
+    except Exception as e:
+        print(f"Error loading model: {e}")
+        return
     model.eval()
 
     # Render 2D projections and extract features
