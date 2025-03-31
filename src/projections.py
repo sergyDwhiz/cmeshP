@@ -11,7 +11,7 @@ import polyscope as ps
 import nibabel as nib
 import os
 import torch
-from trainCNN import MultiViewCNN  # Ensure this module is in your PYTHONPATH
+from trainCNN import MultiViewCNN  # Ensure trainCNN is in the Python path or same directory
 
 def visualize_mesh(mesh_path, save_dir, annotations_path, curvature_path, model_path):
     """

@@ -9,6 +9,7 @@ import open3d as o3d
 import nibabel as nib
 import polyscope as ps
 from scipy.interpolate import RegularGridInterpolator as rgi
+import os
 
 
 def get_labels(annotations_path):
@@ -756,6 +757,17 @@ def visualize_original_and_reconstructed_curvature(mesh, original_curvature, rec
     3D visualization of the curvature of the ground truth shape, the reconstructed and their difference.
     Calculation of the metrics: MSE and Curvature Accuracy (thres=0.2)
     """
+    # Downsample original_curvature if needed
+    if original_curvature.shape[0] != mesh.vertex.positions.shape[0]:
+        new_length = mesh.vertex.positions.shape[0]
+        new_curv = np.zeros(new_length)
+        factor = original_curvature.shape[0] / new_length
+        for i in range(new_length):
+            start = int(i * factor)
+            end = int((i + 1) * factor)
+            new_curv[i] = np.mean(original_curvature[start:end])
+        original_curvature = new_curv
+
     # original curvature as calculated in freesurfer
     visualize_mesh_with_curvature(mesh, original_curvature, "Original Curvature", cmap='jet')
 
@@ -808,7 +820,10 @@ def visualize_maps(output_maps, labels_maps, curvature_maps):
 
 
 def main(mesh_path, annotations_path, curvature_path, img_width, img_height):
-    """Main function"""
+    # Create results directory if it doesn't exist
+    results_dir = '/Users/sergiusnyah/cmeshP/results'
+    os.makedirs(results_dir, exist_ok=True)
+
     try:
         mesh = create_mesh(mesh_path)
     except Exception as e:
@@ -832,9 +847,9 @@ def main(mesh_path, annotations_path, curvature_path, img_width, img_height):
 
 if __name__ == "__main__":
     # paths
-    mesh_path = '/Users/nicolas/Desktop/10brainsurfaces/100206/surf/lh_aligned.surf'
-    annotations_path = '/Users/nicolas/Desktop/10brainsurfaces/100206/label/lh.annot'
-    curvature_path = '/Applications/freesurfer/7.4.1/subjects/bert/surf/10brainsurfaces/100206/surf/lh.lh_aligned.surf.H'
+    mesh_path = '/Users/sergiusnyah/cmeshP/10brainsurfaces/100206/surf/lh_aligned.surf'
+    annotations_path = '/Users/sergiusnyah/cmeshP/10brainsurfaces/100206/label/lh.annot'
+    curvature_path = '/Users/sergiusnyah/cmeshP/freesurfer/subjects/bert/surf/lh.curv'
 
     # image specs
     img_width = 1920
