@@ -1,0 +1,3 @@
+- Take 6 image views.
+- Edit segmented mesh to display with Legends
+- Document work.

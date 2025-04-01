@@ -79,13 +79,10 @@ def compute_intmat(img_width, img_height, zoom=2.0):
 
     # Modification: fill the diagonal elements with appropriate values
     np.fill_diagonal(intmat, [focal_length, focal_length, 1])
-#    np.fill_diagonal(intmat, [-(img_width + img_height) / 1, -(img_width + img_height) / 1, 1])
 
     # Modification: centering
     intmat[0, 2] = img_width / 2  # Center x
     intmat[1, 2] = img_height / 2  # Center y
-#    # Set the last column of the matrix for image centering
-#    intmat[:,-1] = [img_width / 2, img_height / 2, 1]
 
     return intmat
 
@@ -274,8 +271,6 @@ def compute_rotations(random_degs=5, view = 'Random', random = False):
     rotation_matrices = np.array(rotation_matrices)
 
 
-    #rotation_matrices = np.transpose(rotation_matrices, (1, 2, 0))
-
     return rotation_matrices
 
 
@@ -412,16 +407,12 @@ def generate_maps(mesh, labels, curvature, intmat, extmat, img_width, img_height
         # Compute the labels map
         labels_map = labels[vertex_map.clip(0)]
         labels_map[vertex_map == -1] = -1
-        #labels_map = np.median(labels_map, axis=2)
         labels_map = labels_map[np.arange(labels_map.shape[0])[:, np.newaxis], np.arange(labels_map.shape[1]), label_ids]
         labels_map = labels_map.astype('float64')
         labels_maps.append(labels_map)
 
     output_maps = np.array(output_maps)
     labels_maps = np.array(labels_maps)
-    #print('Type: ',labels_maps.dtype)
-    # ids_maps = np.array(ids_maps)
-    # vertex_maps = np.array(vertex_maps)
 
     return output_maps, labels_maps, curvature_maps, ids_maps, vertex_maps
 
@@ -432,107 +423,26 @@ def load_curvature(file_path):
     return np.array(curv_data)
 
 
-# overwriting, no voting mechanism: 96.77% acc
-#def reconstruct_3d_annotations(mesh, labels_maps, ids_maps, extmats, intmat):
-#    num_views = len(labels_maps)
-#    num_vertices = mesh.vertex.positions.shape[0]
-#    reconstructed_labels = np.full(num_vertices, -1, dtype=int)
-#    for i in range(num_views):
-#        labels_map = labels_maps[i]
-#        ids_map = ids_maps[i]
-#        for y in range(labels_map.shape[0]):
-#            for x in range(labels_map.shape[1]):
-#                triangle_id = ids_map[y, x]
-#                if triangle_id != -1:
-#                    vertex_indices = mesh.triangle.indices[triangle_id].numpy()
-#                    if np.any(vertex_indices >= num_vertices):
-#                        print(f"Invalid vertex index detected: {vertex_indices}")
-#                        continue
-#                    label = labels_map[y, x]
-#                    reconstructed_labels[vertex_indices] = label
-#    return reconstructed_labels
-
-
-# average voting mechanism: 99.78% acc
-#def reconstruct_3d_annotations(mesh, labels_maps, ids_maps, extmats, intmat):
-#    num_views = len(labels_maps)
-#    num_vertices = mesh.vertex.positions.shape[0]
-#    max_label = int(np.max(labels_maps))
-#    vertex_label_votes = np.zeros((num_vertices, max_label + 1), dtype=int)
-#    for i in range(num_views):
-#        labels_map = labels_maps[i]
-#        ids_map = ids_maps[i]
-#        for y in range(labels_map.shape[0]):
-#            for x in range(labels_map.shape[1]):
-#                triangle_id = ids_map[y, x]
-#                if triangle_id != -1:
-#                    vertex_indices = mesh.triangle.indices[triangle_id].numpy()
-#                    if np.any(vertex_indices >= num_vertices):
-#                        print(f"Invalid vertex index detected: {vertex_indices}")
-#                        continue
-#                    label = int(labels_map[y, x])
-#                    if 0 <= label < vertex_label_votes.shape[1]:
-#                        vertex_label_votes[vertex_indices, label] += 1
-#    reconstructed_labels = np.argmax(vertex_label_votes, axis=1)
-#    return reconstructed_labels
-
-
-# max voting mechanism: 99.83% acc
 def reconstruct_3d_annotations(mesh, labels_maps, ids_maps, extmats, intmat):
-    """Reconstructs 3D annotations by aggregating labels from multiple 2D views"""
-
-    # number of views
     num_views = len(labels_maps)
-
-    # number of vertices
     num_vertices = mesh.vertex.positions.shape[0]
-
-    # max label/number of labels
     max_label = int(np.max(labels_maps))
-
-    # initialize an array to store votes for each label for each vertex
     vertex_label_votes = np.zeros((num_vertices, max_label + 1), dtype=int)
-
-    # iterate through each view
     for i in range(num_views):
         labels_map = labels_maps[i]
         ids_map = ids_maps[i]
-
-        # iterate through each pixel in the label map
         for y in range(labels_map.shape[0]):
             for x in range(labels_map.shape[1]):
                 triangle_id = ids_map[y, x]
-
-                # check triangle validity
                 if triangle_id != -1:
-                    # get the vertices associated with the triangle
                     vertex_indices = mesh.triangle.indices[triangle_id].numpy()
-
-                    # check vertex validity
                     if np.any(vertex_indices >= num_vertices):
-                        print(f"Invalid vertex index detected: {vertex_indices}")
                         continue
-
-                    # label for the current pixel
                     label = int(labels_map[y, x])
-
-                    # check label range
                     if 0 <= label < vertex_label_votes.shape[1]:
-                        # update the votes for each vertex in the triangle
                         for vertex_index in vertex_indices:
                             vertex_label_votes[vertex_index, label] += 1
-
-    # determine the final label for each vertex based on the votes
-    reconstructed_labels = np.argmax(vertex_label_votes, axis=1)
-
-    return reconstructed_labels
-
-
-# MSE unstable due to outliers
-#def compute_mse(original_labels, reconstructed_labels):
-#    valid_indices = original_labels >= 0  # Exclude invalid labels
-#    mse = np.mean((original_labels[valid_indices] - reconstructed_labels[valid_indices]) ** 2)
-#    return mse
+    return np.argmax(vertex_label_votes, axis=1)
 
 
 def compute_mse(original_labels, reconstructed_labels):
@@ -631,7 +541,6 @@ def visualize_original_and_reconstructed(mesh, original_labels, reconstructed_la
     print(f"Accuracy between original and reconstructed labels: {accuracy * 100:.2f}%")
 
 
-# average curvature from every view: 99.3% acc
 def reconstruct_3d_curvature(mesh, curvature_maps, ids_maps):
     """Reconstructs the 3D shape with discrete mean curvature"""
     # number of views (projections)
@@ -678,50 +587,6 @@ def reconstruct_3d_curvature(mesh, curvature_maps, ids_maps):
             reconstructed_curvature[vertex_index] = vertex_curvature_sum[vertex_index] / vertex_curvature_count[vertex_index]
 
     return reconstructed_curvature
-
-
-# max curvature from every view: 95.4% acc
-#def reconstruct_3d_curvature(mesh, curvature_maps, ids_maps):
-#    """
-#    Reconstructs the 3D shape with discrete maximum curvature from multiple 2D projections.
-#    """
-#    num_views = len(curvature_maps)
-#    num_vertices = mesh.vertex.positions.shape[0]
-#
-#    # arrays to store maximum curvature values for each vertex
-#    max_curvature = np.full(num_vertices, -np.inf)
-#
-#    # loop over each view to accumulate curvature data
-#    for i in range(num_views):
-#        curvature_map = curvature_maps[i]
-#        ids_map = ids_maps[i]
-#
-#        # loop over each pixel in the 2D curvature map
-#        for y in range(curvature_map.shape[0]):
-#            for x in range(curvature_map.shape[1]):
-#                triangle_id = ids_map[y, x]
-#
-#                # check if the pixel corresponds to a valid triangle and curvature value
-#                if triangle_id != -1 and not np.isnan(curvature_map[y, x]):
-#                    # get the vertex indices for the triangle
-#                    vertex_indices = mesh.triangle.indices[triangle_id].numpy()
-#
-#                    # ensure the vertex indices are within valid range
-#                    if np.any(vertex_indices >= num_vertices):
-#                        print(f"Invalid vertex index detected: {vertex_indices}")
-#                        continue
-#
-#                    curvature_value = curvature_map[y, x]
-#
-#                    # update maximum curvature for each vertex
-#                    for vertex_index in vertex_indices:
-#                        if curvature_value > max_curvature[vertex_index]:
-#                            max_curvature[vertex_index] = curvature_value
-#
-#    # assign the maximum curvature to the reconstructed curvature array
-#    reconstructed_curvature = np.where(max_curvature > -np.inf, max_curvature, 0)
-#
-#    return reconstructed_curvature
 
 
 def visualize_mesh_with_curvature(mesh, curvature, title, cmap='jet'):
@@ -789,34 +654,45 @@ def visualize_original_and_reconstructed_curvature(mesh, original_curvature, rec
 
 def visualize_maps(output_maps, labels_maps, curvature_maps):
     """2D projection visualizations of normals, annotations and curvature"""
+    import os
+    results_dir = '/Users/sergiusnyah/cmeshP/results'
     # 3 plots of 6 subplots
     fig, axs = plt.subplots(3, 6, figsize=(18, 9))
-
     # global min and max curvature for normalization
     all_curvatures = np.concatenate([curv_map.flatten() for curv_map in curvature_maps])
     min_curvature = np.nanmin(all_curvatures)
     max_curvature = np.nanmax(all_curvatures)
     print("Global curvature range:", min_curvature, max_curvature)
-
     for i in range(6):
-        # 6 views of the brain with normals: front, back, right, left, bottom, up
         axs[0, i].imshow(output_maps[i])
         axs[0, i].set_title(f'View {i+1} - Output Map')
         axs[0, i].axis('off')
-
-        # same 6 views of the brain visualized with the ground truth annotations
         axs[1, i].imshow(labels_maps[i], cmap='jet')
         axs[1, i].set_title(f'View {i+1} - Labels Map')
         axs[1, i].axis('off')
-
-        # same 6 views of the brain with mean curvature visualized (from .H file created via freesurfer)
-        cmap = plt.cm.hot
-        cmap.set_bad(color='black')
+        cmap_obj = plt.cm.hot
+        cmap_obj.set_bad(color='black')
         axs[2, i].imshow(curvature_maps[i], cmap='jet', interpolation='nearest')
         axs[2, i].set_title(f'View {i+1} - Curvature Map')
         axs[2, i].axis('off')
     plt.tight_layout()
-    plt.show()
+    save_path = os.path.join(results_dir, "combined_maps.png")
+    plt.savefig(save_path)
+    plt.close()
+    print(f"Saved combined maps figure to {save_path}")
+
+
+def evaluate_model_performance(original_labels, reconstructed_labels, original_curvature, reconstructed_curvature):
+    mse_labels = compute_mse(original_labels, reconstructed_labels)
+    acc_labels = compute_accuracy(original_labels, reconstructed_labels)
+    mse_curv = compute_mse(original_curvature, reconstructed_curvature)
+    curv_acc = compute_curvature_accuracy(original_curvature, reconstructed_curvature)
+
+    print("Evaluation Metrics:")
+    print(f"Labels MSE: {mse_labels:.4f}")
+    print(f"Labels Accuracy: {acc_labels * 100:.2f}%")
+    print(f"Curvature MSE: {mse_curv:.4f}")
+    print(f"Curvature Accuracy: {curv_acc * 100:.2f}%")
 
 
 def main(mesh_path, annotations_path, curvature_path, img_width, img_height):
@@ -843,6 +719,7 @@ def main(mesh_path, annotations_path, curvature_path, img_width, img_height):
     visualize_maps(output_maps, labels_maps, curvature_maps)
     visualize_original_and_reconstructed(mesh, labels, reconstructed_labels)
     visualize_original_and_reconstructed_curvature(mesh, curvature, reconstructed_curvature)
+    evaluate_model_performance(labels, reconstructed_labels, curvature, reconstructed_curvature)
 
 
 if __name__ == "__main__":
