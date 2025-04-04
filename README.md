@@ -2,7 +2,7 @@
 
 Complete Article: [Pseudo Rendering: A Novel Deep Learning Approach for 2D Cortical Mesh Segmentation (MIT SGI 2024)](https://summergeometry.org/sgi2024/pseudo-rendering-a-novel-deep-learning-approach-for-2d-cortical-mesh-segmentation/)
 
-# ![Project Cover Image](./images/ProjectCover.png)
+# ![Project Cover Image](./images/idea-image.png)
 
 ## Abstract
 This project introduces a novel methodology for segmenting cortical meshes using 2D projection descriptors combined with advanced deep learning and unsupervised clustering techniques. By transforming complex three-dimensional brain surface data into multiple two-dimensional views, our approach circumvents traditional computational constraints while offering a scalable, robust segmentation pipeline. We detail the entire process—from data acquisition and advanced preprocessing to deep convolutional network design and multi-view integration—culminating in precise 3D reconstruction of cortical structures.
@@ -21,12 +21,12 @@ While volumetric segmentation using 3D CNNs has been extensively studied, conver
 ## Methodology
 ### Multi-view Projection Extraction
 - **View Selection & Rendering:** Use pyrender and trimesh to generate diverse perspectives of cortical meshes, ensuring six canocical complementary viewpoints (Camera views)
-![alt text](image.png)
+![alt text](./images/annotations.png)
 - Add ground truth (annotations)
-![alt text](image-1.png)
+![alt text](./images/projections.png)
 - **Projection Descriptor Extraction:** Convert 3D anatomical structures into high-fidelity 2D images with minimal loss of geometric features.
 - **Add annotations and Curvature:** To continue, we take the 2D projections obtained from the six camera views and perform annotations and curvature calculations, which are essential for understanding the cortical surface’s geometry and features.
-![alt text](image-2.png)
+![alt text](./images/image-2.png)
 
 ### Segmentation Model
 - **Deep CNN Architecture:** Employ a custom network (e.g., CorticalSegmentationCNN) to process the 2D projections, yielding pixel-wise segmentation maps.
@@ -55,6 +55,7 @@ After training and extensive evaluation, the final outputs have been stored in t
 - The final segmentation model (parcellation_model.pth) with advanced legends for regional annotations.
 - Quantitative evaluation metrics, including Mean Squared Error (MSE) and segmentation accuracy, demonstrating the robustness and efficiency of the proposed pipeline.
 These results confirm that the 2D projection-based approach yields a precisely segmented brain.
+
 ![Final Resuts](<results/Final Results.png>)
 
 ## Discussion
