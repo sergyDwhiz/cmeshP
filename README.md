@@ -1,6 +1,6 @@
 # Pseudo Rendering: A Novel Deep Learning Approach for 2D Cortical Mesh Segmentation
 
-Complete Article: [Pseudo Rendering: A Novel Deep Learning Approach for 2D Cortical Mesh Segmentation (MIT SGI 2024)](https://summergeometry.org/sgi2024/pseudo-rendering-a-novel-deep-learning-approach-for-2d-cortical-mesh-segmentation/)
+Complete Article: [Pseudo Rendering: A Novel Deep Learning Approach for 2D Cortical Mesh Segmentation (MIT SGI 2024)](https://summergeometry.org/sgi2024/pseudo-rendering-a-novel-deep-learning-approach-for-2D-cortical-mesh-segmentation/)
 
 # ![Project Cover Image](./images/idea-image.png)
 
@@ -74,10 +74,24 @@ I present a comprehensive 2D projection-based framework for cortical mesh segmen
 - Enhance network architectures using attention mechanisms.
 - Develop interactive visualization tools for clinical and research applications.
 
+## Project Workflow
+1. **Clone the Repository:**
+   `git clone https://github.com/sergyDwhiz/cmeshP` && `cd cmeshP`
+2. **Install Dependencies:**
+   Install [FreeSurfer](https://surfer.nmr.mgh.harvard.edu/fswiki/) and set up environment variables (Requirements). Then set up the Python virtual environment using `./setup_venv.sh`.
+3. **Prepare the Data:**
+   Ensure your cortical surfaces are generated with FreeSurfer and stored in the `/10brainsurfaces` directory.
+4. **Train the Segmentation Model:**
+   Execute `python src/train_segmentation.py` to train the model. The final segmentation model will be saved in the `/results` folder.
+5. **Execute Segmentation & Visualization:**
+   Use the provided scripts in `src/` (e.g., `parcellation_cnn.py` and `projection_final.py`) to segment and visualize brain regions.
+6. **Review Results:**
+   Find high-resolution outputs and evaluation metrics in the `/results` directory.
+
 ## Acknowledgements
 I gratefully acknowledge the support of [Dr. Karthik Gopinath](https://lcn.martinos.org/people/karthik-gopinath/) at Harvard Medical School and Massachussets General Hospital. Special thanks to the open-source community for [FreeSurfer](https://surfer.nmr.mgh.harvard.edu/fswiki/DownloadAndInstall) and the scientific libraries that powered this project.
 
 ## Contact
 For further inquiries, please contact me at [sergiusnyah@gmail.com](mailto:sergiusnyah@gmail.com)
 
-Complete Article: [Pseudo Rendering: A Novel Deep Learning Approach for 2D Cortical Mesh Segmentation (MIT SGI 2024)](https://summergeometry.org/sgi2024/pseudo-rendering-a-novel-deep-learning-approach-for-2d-cortical-mesh-segmentation/)
+Complete Article: [Pseudo Rendering: A Novel Deep Learning Approach for 2D Cortical Mesh Segmentation (MIT SGI 2024)](https://summergeometry.org/sgi2024/pseudo-rendering-a-novel-deep-learning-approach-for-2D-cortical-mesh-segmentation/)
