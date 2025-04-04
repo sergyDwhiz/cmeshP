@@ -2,7 +2,7 @@
 
 Complete Article: [Pseudo Rendering: A Novel Deep Learning Approach for 2D Cortical Mesh Segmentation (MIT SGI 2024)](https://summergeometry.org/sgi2024/pseudo-rendering-a-novel-deep-learning-approach-for-2d-cortical-mesh-segmentation/)
 
-# ![Project Cover Image](<Pic 1 - Mesh.png>)
+# ![Project Cover Image](./images/ProjectCover.png)
 
 ## Abstract
 This project introduces a novel methodology for segmenting cortical meshes using 2D projection descriptors combined with advanced deep learning and unsupervised clustering techniques. By transforming complex three-dimensional brain surface data into multiple two-dimensional views, our approach circumvents traditional computational constraints while offering a scalable, robust segmentation pipeline. We detail the entire process—from data acquisition and advanced preprocessing to deep convolutional network design and multi-view integration—culminating in precise 3D reconstruction of cortical structures.
