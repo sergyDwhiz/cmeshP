@@ -16,7 +16,7 @@ Brain surface segmentation is a pivotal task in neuroimaging, essential for accu
 This method significantly reduces computational overhead while retaining critical structural information, paving the way for advanced neuroimaging analyses.
 
 ## Literature Review
-While volumetric segmentation using 3D CNNs has been extensively studied, converting 3D geometry into 2D representations remains underexplored. Prior works [Author et al., Year; Another Author et al., Year] have demonstrated benefits in multi-view processing, yet often lack robust methods for consistent 3D reconstruction. My approach builds on these foundational studies by integrating multi-view deep learning with rigorous post-processing to produce reliable, high-fidelity cortical segmentations.
+While volumetric segmentation using 3D CNNs has been extensively studied, converting 3D geometry into 2D representations remains underexplored. Prior works have demonstrated benefits in multi-view processing, yet often lack robust methods for consistent 3D reconstruction. My approach builds on these foundational studies by integrating multi-view deep learning with rigorous post-processing to produce reliable, high-fidelity cortical segmentations.
 
 ## Methodology
 ### Multi-view Projection Extraction
